@@ -28,7 +28,8 @@
 /// \brief Implementation of the B1::DetectorConstruction class
 
 #include "DetectorConstruction.hh"
-
+#include "Hit.hh"
+#include "ReadOut.hh"
 #include "G4RunManager.hh"
 #include "G4NistManager.hh"
 #include "G4Box.hh"
@@ -42,34 +43,52 @@
 #include "G4VSensitiveDetector.hh"
 #include "G4Step.hh"
 #include "G4SDManager.hh"
+#include <fmt/core.h>
+#include <fmt/format.h>
 
-//#include <fmt/core.h>
-//#include <fmt/format.h>
+//struct Hit
+//{
+//	int a;
+//
+//  //G4ThreeVector pos; 
+//  //G4double energyDeposit;
+//  //G4TouchableHandle touchable;
+//  // //copyNo = touchable -> GetVolume(0) -> GetCopyNo();
+//  //G4String particle; 
+//};
+
 namespace B1
 {
 class GEMSensitiveDetector: public G4VSensitiveDetector
 {
-	
+       ::ReadOut r;
 		std::ofstream outFile;
 	public:
 		GEMSensitiveDetector (G4String SDname) : G4VSensitiveDetector(SDname)
 	        {
 		 outFile.open("hit.txt",std::ios_base::trunc);
 		 
-		 //outFile << fmt::format("{}\n", "");
+		 outFile << fmt::format("{:15} {:>30} {:^32} {:>10}\n", "номер события", "Выделение энергии, keV", "Координаты", "частица");
 		};
 		~GEMSensitiveDetector() override {
 		outFile.close();
 		};
 	public:
-		G4bool ProcessHits(G4Step *step, G4TouchableHistory *R0hist) override {
-			auto hitPos = (step->GetPreStepPoint()->GetPosition() + step->GetPostStepPoint()->GetPosition())/2;
-			auto energyDeposit = step->GetTotalEnergyDeposit();
-			auto touchable = step->GetPreStepPoint()->GetTouchableHandle();
-			auto copyNo = touchable -> GetVolume(0) -> GetCopyNo();
-			auto particle = step->GetTrack()->GetParticleDefinition()->GetParticleName();
-			if (energyDeposit > 0){ 
-			outFile<<"Выделение энергии: "<<energyDeposit/CLHEP::keV<<" Координаты хита:  "<<hitPos<<" Частица: "<<particle<<std::endl;
+			G4bool ProcessHits(G4Step *step, G4TouchableHistory *R0hist, G4Material* mat) override {
+			::Hit hit;
+			hit.pos = (step->GetPreStepPoint()->GetPosition() + step->GetPostStepPoint()->GetPosition())/2;
+			hit.energyDeposit = step->GetTotalEnergyDeposit();
+
+			hit.touchable = step->GetPreStepPoint()->GetTouchableHandle();
+			////auto copyNo = touchable -> GetVolume(0) -> GetCopyNo();
+		        hit.particle = step->GetTrack()->GetParticleDefinition()->GetParticleName();
+            ionizationEnergy = mat->GetIonizationEnergy();
+            float q = hit.energyDeposit/ionizationEnergy;
+			G4int evtNo = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
+
+			if (true){  
+		        	outFile << fmt::format("{:>15} {:>30.6f} {:>10.3f} {:>10.3f} {:>10.3f} {:>10} {:>10.3f}\n", evtNo, hit.energyDeposit/CLHEP::keV, hit.pos.x(), hit.pos.y(), hit.pos.z(), hit.particle, step->GetTrack()->GetTotalEnergy()/CLHEP::keV);
+			//outFile<<"Выделение энергии: "<<" Координаты хита:  "<<hitPos<<" Частица: "<<std::endl;
 			};
 	                //outFile.flush();
 
