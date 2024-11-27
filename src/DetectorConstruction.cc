@@ -240,6 +240,7 @@ new G4PVPlacement(nullptr,  // no rotation
   // Set Shape2 as scoring volume
   //*/
   fScoringVolume = logicConv ;
+  double x;
 
   //
   //always return the physical World
