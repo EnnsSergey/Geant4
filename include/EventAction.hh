@@ -32,29 +32,47 @@
 
 #include "G4UserEventAction.hh"
 #include "globals.hh"
+#include "ReadOut.hh"
+#include "G4Types.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4VSensitiveDetector.hh"
+#include "G4Step.hh"
+#include "G4SDManager.hh"
+
 
 namespace B1
 {
 
-class RunAction;
+	class RunAction;
+	class GEMSensitiveDetector : public G4VSensitiveDetector
+	{
+		public:
+			GEMSensitiveDetector (G4String SDname);
+			~GEMSensitiveDetector() override;
 
-/// Event action class
+		public:         
+			G4bool ProcessHits(G4Step *step, G4TouchableHistory *R0hist) override;
 
-class EventAction : public G4UserEventAction
-{
-  public:
-    EventAction(RunAction* runAction);
-    ~EventAction() override = default;
+	};
 
-    void BeginOfEventAction(const G4Event* event) override;
-    void EndOfEventAction(const G4Event* event) override;
+	/// Event action class
 
-    void AddEdep(G4double edep) { fEdep += edep; }
+	class EventAction : public G4UserEventAction
+	{
+		public:
+			EventAction(RunAction* runAction);
+			~EventAction() override = default;
+			ReadOut readOut;
+			void BeginOfEventAction(const G4Event* event) override;
+			void EndOfEventAction(const G4Event* event) override;
 
-  private:
-    RunAction* fRunAction = nullptr;
-    G4double   fEdep = 0.;
-};
+			void AddEdep(G4double edep) { fEdep += edep; }
+
+
+		private:
+			RunAction* fRunAction = nullptr;
+			G4double   fEdep = 0.;
+	};
 
 }
 

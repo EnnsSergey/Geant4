@@ -37,6 +37,7 @@
 #include <thread>
 #include <mutex>
 #include <fstream>
+#include "ReadOut.hh"
 class G4Run;
 
 namespace B1
@@ -54,7 +55,21 @@ class RunAction : public G4UserRunAction
     RunAction();
     ~RunAction() override = default;
     G4Accumulable<G4int> N = 0.0;
-     
+    
+    
+  mutable std::array<std::array<G4Accumulable<G4int>,ReadOut::XSIZE>,ReadOut::YSIZE> histogram;
+     double av_sqrX;
+     double av_sqrY;
+     double varX;
+     double varY;
+     double pad_x(int j);
+     double pad_y(int i);
+
+     double SumOfEvents;
+     double av_X;
+     double av_Y;
+     double math_exp_X;
+     double math_exp_Y;
 
     void BeginOfRunAction(const G4Run*) override;
     void   EndOfRunAction(const G4Run*) override;

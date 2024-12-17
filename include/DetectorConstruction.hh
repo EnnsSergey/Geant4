@@ -30,8 +30,11 @@
 #ifndef B1DetectorConstruction_h
 #define B1DetectorConstruction_h 1
 
+#include "G4Types.hh"
+#include "G4SystemOfUnits.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
+#include "ReadOut.hh"
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
@@ -51,7 +54,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     G4LogicalVolume* GetScoringVolume() const { return fScoringVolume; }
     void ConstructSDandField();
-   
 
   protected:
     G4LogicalVolume* fScoringVolume = nullptr;
