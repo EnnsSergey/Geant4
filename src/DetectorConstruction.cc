@@ -82,8 +82,8 @@ class GEMSensitiveDetector: public G4VSensitiveDetector
 			hit.touchable = step->GetPreStepPoint()->GetTouchableHandle();
 			////auto copyNo = touchable -> GetVolume(0) -> GetCopyNo();
 		        hit.particle = step->GetTrack()->GetParticleDefinition()->GetParticleName();
-            ionizationEnergy = mat->GetIonizationEnergy();
-            float q = hit.energyDeposit/ionizationEnergy;
+            //ionizationEnergy = mat->GetIonizationEnergy();
+            //float q = hit.energyDeposit/ionizationEnergy;
 			G4int evtNo = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
 
 			if (true){  
