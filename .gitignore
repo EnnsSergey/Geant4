@@ -1,0 +1,4 @@
+*Zone.Identifier
+*.*.sw*
+build/
+build-old/

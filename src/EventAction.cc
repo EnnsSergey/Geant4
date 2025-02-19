@@ -55,6 +55,7 @@ namespace B1
 
 	GEMSensitiveDetector::GEMSensitiveDetector (G4String SDname) : G4VSensitiveDetector(SDname)		
 	{
+		//outFile.open("hit.txt",std::ios_base::trunc);
 		outFile.open("hit.txt",std::ios_base::trunc);
 
 		outFile << fmt::format("{:15} {:>30} {:^32} {:>10}\n", "номер события", "Выделение энергии, keV", "Координаты", "частица");
@@ -78,11 +79,12 @@ namespace B1
 		hit.particle = step->GetTrack()->GetParticleDefinition()->GetParticleName();
 		auto ionizationEnergy = 30*eV;
 		float q = hit.energyDeposit/ionizationEnergy;
+		if (hit.particle == "e-"){q = -1.0 * q;}
 		G4int evtNo = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
 		eventAction->readOut.AddCharge(hit.pos.x(), hit.pos.y(), q);
-/*		for (int i=0;i<ReadOut::YSIZE;i++)
-	{
-		for(int j=0;j<ReadOut::XSIZE;j++)
+		/*		for (int i=0;i<ReadOut::YSIZE;i++)
+				{
+				for(int j=0;j<ReadOut::XSIZE;j++)
 
 		{
 			G4cout<<eventAction->readOut.charge[i][j]<< "charge"<<G4endl;
@@ -92,6 +94,7 @@ namespace B1
 		if (true){  
 			outFile << fmt::format("{:>15} {:>30.6f} {:>10.3f} {:>10.3f} {:>10.3f} {:>10} {:>10.3f}\n", evtNo, hit.energyDeposit/CLHEP::keV, hit.pos.x(), hit.pos.y(), hit.pos.z(), hit.particle, step->GetTrack()->GetTotalEnergy()/CLHEP::keV);
 			//outFile<<"Выделение энергии: "<<" Координаты хита:  "<<hitPos<<" Частица: "<<std::endl;
+
 		};
 		outFile.flush();
 
@@ -134,8 +137,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
 		for(int j=0;j<ReadOut::XSIZE;j++)
 
 		{
-			if (readOut.charge[i][j]>0){runAction->histogram[i][j]+=1;}
-			//G4cout<< "CHARGE " << readOut.charge[i][j]<<G4endl; 
+			if (abs(readOut.charge[i][j])>0){runAction->histogram[i][j]+=1;}
 
 
 		}

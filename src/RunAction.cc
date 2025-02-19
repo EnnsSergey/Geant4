@@ -42,6 +42,8 @@
 #include <atomic>
 #include "ReadOut.hh"
 #include "EventAction.hh"
+#include <fstream>
+#include <mutex>
 
 namespace B1
 {
@@ -57,6 +59,7 @@ namespace B1
 		const G4double nanogray  = 1.e-9*gray;
 		const G4double picogray  = 1.e-12*gray;
 
+		
 		new G4UnitDefinition("milligray", "milliGy" , "Dose", milligray);
 		new G4UnitDefinition("microgray", "microGy" , "Dose", microgray);
 		new G4UnitDefinition("nanogray" , "nanoGy"  , "Dose", nanogray);
@@ -76,6 +79,7 @@ namespace B1
 			}
 		}
 	}
+
 
 	//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -146,6 +150,8 @@ namespace B1
 		// Print
 		//
 		if (IsMaster()) {
+
+
 			G4cout << "Total number of events: " << nofEvents << " Total number of interacted: " << N.GetValue() << "   N = " << nn << G4endl
 				<< "--------------------End of Global Run-----------------------" << G4endl;
 			for (int i=0;i<ReadOut::YSIZE; i++)
@@ -166,17 +172,25 @@ namespace B1
 				G4cout<<"y variance: "<<varY<<G4endl;
 
 			}
+			/*std::array<int,ReadOut::YSIZE> arr;
+			for (int i=0; i<ReadOut::YSIZE; i++)
+			{
+				arr[i]=0;
+			}*/
+
 			G4cout<<"BEGIN"<<G4endl;
 			for (int i=0;i<ReadOut::YSIZE; i++)
 			{
 				for (int j=0;j<ReadOut::XSIZE; j++)
 				{  
 					G4cout<<histogram[i][j].GetValue()<<" ";
-				}
+	}
 				G4cout<<G4endl;
 
 			}
+
 			G4cout<<"END"<<G4endl;
+
 
 		}
 		else {
